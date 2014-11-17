@@ -28,10 +28,17 @@
 *.app
 
 # Visual Studio files
+Properties
+App.config
 *.sdf
 *.sln
 *.v*.suo
 *.vcxproj*
+*.csproj
+
+# Linker and compiler files
+obj
+bin
 
 # Packages (NuGet)
 packages
