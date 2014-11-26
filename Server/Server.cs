@@ -40,6 +40,8 @@ namespace TastySoap{
     }
 
     public class AsyncServer : IAsyncServer{
+        public AsyncServer(IPEndPoint localEndPoint, int port, int numberOfConnections, int ReciveBufferSize){
 
+        }
     }
 }
