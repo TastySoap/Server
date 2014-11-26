@@ -9,6 +9,7 @@ namespace TastySoap{
     interface IAsyncServer{
         void Start(Int32 port);
         void AcceptRequest(SocketAsyncEventArgs e);
+        void OnAcceptRequestFinished(object sender, SocketAsyncEventArgs e);
         void Stop();
     }
 
