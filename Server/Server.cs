@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TastySoap
-{
-    class Server
-    {
+namespace TastySoap{
+    interface IServer{
+
+    }
+    class Server{
     }
 }
