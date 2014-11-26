@@ -11,6 +11,7 @@ namespace TastySoap{
         void AcceptRequest(SocketAsyncEventArgs e);
         void OnAcceptRequestFinished(object sender, SocketAsyncEventArgs e);
         void ProcessAccept(SocketAsyncEventArgs e);
+        void OnIOFinished(object sender, SocketAsyncEventArgs e);
         void Stop();
     }
 
