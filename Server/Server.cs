@@ -39,6 +39,7 @@ namespace TastySoap{
         void CloseClientConnection(SocketAsyncEventArgs e);
     }
 
-    class AsyncServer : IAsyncServer{
+    public class AsyncServer : IAsyncServer{
+
     }
 }
