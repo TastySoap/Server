@@ -6,8 +6,18 @@ using System.Net;
 using System.Text;
 
 namespace TastySoap{
-    interface IAsyncServer{
-        void Start(Int32 port);
+    interface IStartable{
+        void Start();
+    }
+
+    interface IStoppable{
+        void Stop();
+    }
+
+    interface IAsyncServer: 
+        IStartable,
+        IStoppable
+    {
         void AcceptRequest(SocketAsyncEventArgs e);
         void OnAcceptRequestFinished(object sender, SocketAsyncEventArgs e);
         void ProcessAccept(SocketAsyncEventArgs e);
@@ -15,7 +25,6 @@ namespace TastySoap{
         void ProcessRecive(SocketAsyncEventArgs e);
         void ProcessSend(SocketAsyncEventArgs e);
         void CloseClientConnection(SocketAsyncEventArgs e);
-        void Stop();
     }
 
     class AsyncServer : IAsyncServer{
