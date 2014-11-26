@@ -14,16 +14,28 @@ namespace TastySoap{
         void Stop();
     }
 
-    interface IAsyncServer: 
-        IStartable,
-        IStoppable
-    {
-        void AcceptRequest(SocketAsyncEventArgs e);
-        void OnAcceptRequestFinished(object sender, SocketAsyncEventArgs e);
-        void ProcessAccept(SocketAsyncEventArgs e);
-        void OnIOFinished(object sender, SocketAsyncEventArgs e);
+    interface IRunnable: IStartable, IStoppable{}
+
+    interface IAsyncSocketReciver{
         void ProcessRecive(SocketAsyncEventArgs e);
+    }
+
+    interface IAsyncSocketSender{
         void ProcessSend(SocketAsyncEventArgs e);
+    }
+
+    interface IAsyncSocketAcceptor{
+        void Accept(SocketAsyncEventArgs e);
+        void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs e);
+    }
+
+    interface IAsyncServer: 
+        IRunnable,
+        IAsyncSocketAcceptor,
+        IAsyncSocketReciver,
+        IAsyncSocketSender
+    {
+        void OnIOFinished(object sender, SocketAsyncEventArgs e);
         void CloseClientConnection(SocketAsyncEventArgs e);
     }
 
