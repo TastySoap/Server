@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net.Sockets;
+using System.Threading;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TastySoap{
-    interface IServer{
-
+    interface IAsyncServer{
+        void Start(Int32 port);
+        void AcceptRequest(SocketAsyncEventArgs e);
     }
-    class Server{
+
+    class AsyncServer : IAsyncServer{
     }
 }
