@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Server
+namespace TastySoap
 {
     class Program
     {
