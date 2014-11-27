@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using System.Text;
+using System.Collections.Generic;
 
 // TODO: Replace all ...EventArgs and objects with specific classes
 // TODO: Security! (System.Net.Security or openSSL)
@@ -33,14 +34,15 @@ namespace TastySoap{
     /// Makes object being able to do non-blocking reciving.
     /// </summary>
     public interface IAsyncSocketReciver{
-        public void ProcessRecive(SocketAsyncEventArgs e);
+        public void ProcessRecive(SocketAsyncEventArgs args);
+        public int ReciveBufferSize{ get; private set; }
     }
 
     /// <summary>
     /// Makes object being able to do non-blocking sending.
     /// </summary>
     public interface IAsyncSocketSender{
-        public void ProcessSend(SocketAsyncEventArgs e);
+        public void ProcessSend(SocketAsyncEventArgs args);
     }
 
     /// <summary>
@@ -49,8 +51,8 @@ namespace TastySoap{
     /// </summary>
     public interface IAsyncSocketAcceptor{
         // TODO: Connection class
-        public void Accept(SocketAsyncEventArgs e);
-        protected void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs e);
+        public void Accept(SocketAsyncEventArgs args);
+        protected void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs args);
     }
 
     /// <summary>
@@ -66,15 +68,33 @@ namespace TastySoap{
         IAsyncSocketReciver,
         IAsyncSocketSender
     {
-        protected void OnIOFinished(object sender, SocketAsyncEventArgs e);
-        public void CloseClientConnection(SocketAsyncEventArgs e);
+        protected void OnIOFinished(object sender, SocketAsyncEventArgs args);
+        public void CloseClientConnection(SocketAsyncEventArgs args);
+        public int Port{ get; set; }
+        public IPEndPoint IP{ get; set; }
     }
 
     /// <summary>
     /// The represenation of an asynchronous server.
     /// </summary>
     public class AsyncServer : IAsyncServer{
-        public AsyncServer(IPEndPoint localEndPoint, int port, int numberOfConnections, int ReciveBufferSize){
+        private Stack<SocketAsyncEventArgs> pool;
+        public int Port{ get; set; }
+        public IPEndPoint IP{ get; set; }
+        public int ReciveBufferSize{ get; private set; }
+
+        public AsyncServer(IPEndPoint ip, int port, int maxConnectionCount, int reciveBufferSize){
+            Port = port;
+            IP = ip;
+
+            preparePool(maxConnectionCount, reciveBufferSize);
+        }
+
+        private void preparePool(int maxConnectionCount, int reciveBufferSize){
+            pool = new Stack<SocketAsyncEventArgs>(maxConnectionCount);
+        }
+
+        protected void OnIOFinished(object sender, SocketAsyncEventArgs args) {
 
         }
     }
