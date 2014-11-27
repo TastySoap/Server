@@ -5,6 +5,7 @@ using System.Threading;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading;
 
 // TODO: Replace all ...EventArgs and objects with specific classes
 // TODO: Security! (System.Net.Security or openSSL)
@@ -52,7 +53,8 @@ namespace TastySoap{
     public interface IAsyncSocketAcceptor{
         // TODO: Connection class
         public void Accept(SocketAsyncEventArgs args);
-        protected void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs args);
+        public void ProcessAccept(SocketAsyncEventArgs args);
+        protected void OnAcceptCompleted(object sender, SocketAsyncEventArgs args);
     }
 
     /// <summary>
@@ -82,11 +84,14 @@ namespace TastySoap{
         public int Port{ get; set; }
         public IPEndPoint IPEP{ get; set; }
         public int ReciveBufferSize{ get; private set; }
+        public int MaximalConnectionsCount{ get; private set; }
+
+        private Socket listenSocket;
 
         public AsyncServer(IPEndPoint ipep, int port, int maxConnectionCount, int reciveBufferSize){
             Port = port;
             IPEP = ipep;
-
+            MaximalConnectionsCount = maxConnectionCount;
             preparePool(maxConnectionCount, reciveBufferSize);
         }
 
@@ -105,6 +110,29 @@ namespace TastySoap{
 
         override public void Start(){
             prepareListenSocket();
+            prepareAndStartAcceptationProcess();
+        }
+
+        protected void prepareListenSocket(){
+            listenSocket = new Socket(IPEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            listenSocket.ReceiveBufferSize = ReciveBufferSize;
+            listenSocket.SendBufferSize = ReciveBufferSize;
+            listenSocket.Bind(IPEP);
+            listenSocket.Listen(MaximalConnectionsCount);
+        }
+
+        protected void prepareAndStartAcceptationProcess(){
+            var args = new SocketAsyncEventArgs();
+            args.Completed += OnAcceptCompleted;
+            Accept(args);
+        }
+
+        override public void Accept(SocketAsyncEventArgs args){
+            args.AcceptSocket = null;
+
+        }
+
+        override public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
         }
     }
 }
