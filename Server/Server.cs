@@ -100,8 +100,7 @@ namespace TastySoap{
             }
         }
 
-        protected void OnIOFinished(object sender, SocketAsyncEventArgs args) {
-
+        override protected void OnIOFinished(object sender, SocketAsyncEventArgs args) {
         }
     }
 }
