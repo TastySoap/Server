@@ -71,7 +71,7 @@ namespace TastySoap{
         protected void OnIOFinished(object sender, SocketAsyncEventArgs args);
         public void CloseClientConnection(SocketAsyncEventArgs args);
         public int Port{ get; set; }
-        public IPEndPoint IP{ get; set; }
+        public IPEndPoint IPEP{ get; set; }
     }
 
     /// <summary>
@@ -83,9 +83,9 @@ namespace TastySoap{
         public IPEndPoint IP{ get; set; }
         public int ReciveBufferSize{ get; private set; }
 
-        public AsyncServer(IPEndPoint ip, int port, int maxConnectionCount, int reciveBufferSize){
+        public AsyncServer(IPEndPoint ipep, int port, int maxConnectionCount, int reciveBufferSize){
             Port = port;
-            IP = ip;
+            IPEP = ipep;
 
             preparePool(maxConnectionCount, reciveBufferSize);
         }
@@ -101,6 +101,10 @@ namespace TastySoap{
         }
 
         override protected void OnIOFinished(object sender, SocketAsyncEventArgs args) {
+        }
+
+        override public void Start(){
+
         }
     }
 }
