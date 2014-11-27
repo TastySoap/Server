@@ -6,39 +6,70 @@ using System.Net;
 using System.Text;
 
 namespace TastySoap{
-    interface IStartable{
-        void Start();
+    /// <summary>
+    /// Makes object being able to be started.
+    /// </summary>
+    public interface IStartable{
+        public void Start();
     }
 
-    interface IStoppable{
-        void Stop();
+    /// <summary>
+    /// Makes object being able to be stopped.
+    /// </summary>
+    public interface IStoppable{
+        public void Stop();
     }
 
-    interface IRunnable: IStartable, IStoppable{}
+    /// <summary>
+    /// Makes object being able to be both started and stopped.
+    /// </summary>
+    /// <seealso cref="TastySoap.IStartable"/>
+    /// <seealso cref="TastySoap.IStoppable"/>
+    public interface IRunnable: IStartable, IStoppable{}
 
-    interface IAsyncSocketReciver{
-        void ProcessRecive(SocketAsyncEventArgs e);
+    /// <summary>
+    /// Makes object being able to do non-blocking reciving.
+    /// </summary>
+    public interface IAsyncSocketReciver{
+        public void ProcessRecive(SocketAsyncEventArgs e);
     }
 
-    interface IAsyncSocketSender{
-        void ProcessSend(SocketAsyncEventArgs e);
+    /// <summary>
+    /// Makes object being able to do non-blocking sending.
+    /// </summary>
+    public interface IAsyncSocketSender{
+        public void ProcessSend(SocketAsyncEventArgs e);
     }
 
-    interface IAsyncSocketAcceptor{
-        void Accept(SocketAsyncEventArgs e);
-        void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs e);
+    /// <summary>
+    /// Makes object being able to asynchronously accept connections 
+    /// and make actions at the end of accepting process.
+    /// </summary>
+    public interface IAsyncSocketAcceptor{
+        public void Accept(SocketAsyncEventArgs e);
+        protected void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs e);
     }
 
-    interface IAsyncServer: 
+    /// <summary>
+    /// Interface of asynchronous server.
+    /// </summary>
+    /// <seealso cref="TastySoap.IRunnable"/>
+    /// <seealso cref="TastySoap.IAsyncSocketAcceptor"/>
+    /// <seealso cref="TastySoap.IAsyncSocketReciver"/>
+    /// <seealso cref="TastySoap.IAsyncSocketSender"/>
+    public interface IAsyncServer: 
         IRunnable,
         IAsyncSocketAcceptor,
         IAsyncSocketReciver,
         IAsyncSocketSender
     {
-        void OnIOFinished(object sender, SocketAsyncEventArgs e);
-        void CloseClientConnection(SocketAsyncEventArgs e);
+        protected void OnIOFinished(object sender, SocketAsyncEventArgs e);
+        public void CloseClientConnection(SocketAsyncEventArgs e);
     }
 
+    /// <summary>
+    /// The represenation of an asynchronous server.
+    /// </summary>
     public class AsyncServer : IAsyncServer{
         public AsyncServer(IPEndPoint localEndPoint, int port, int numberOfConnections, int ReciveBufferSize){
 
