@@ -5,6 +5,8 @@ using System.Threading;
 using System.Net;
 using System.Text;
 
+// TODO: Replace all ...EventArgs and objects with specific classes
+// TODO: Security! (System.Net.Security or openSSL)
 namespace TastySoap{
     /// <summary>
     /// Makes object being able to be started.
@@ -46,6 +48,7 @@ namespace TastySoap{
     /// and make actions at the end of accepting process.
     /// </summary>
     public interface IAsyncSocketAcceptor{
+        // TODO: Connection class
         public void Accept(SocketAsyncEventArgs e);
         protected void OnAcceptRequestCompleted(object sender, SocketAsyncEventArgs e);
     }
