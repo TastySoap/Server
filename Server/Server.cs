@@ -92,6 +92,12 @@ namespace TastySoap{
 
         private void preparePool(int maxConnectionCount, int reciveBufferSize){
             pool = new Stack<SocketAsyncEventArgs>(maxConnectionCount);
+            for(int i = 0; i < reciveBufferSize; ++i){
+                SocketAsyncEventArgs ioEventArg = new SocketAsyncEventArgs();
+                ioEventArg.Completed += OnIOFinished;
+                ioEventArg.SetBuffer(new byte[reciveBufferSize], 0, reciveBufferSize);
+                pool.Push(ioEventArg);
+            }
         }
 
         protected void OnIOFinished(object sender, SocketAsyncEventArgs args) {
