@@ -80,7 +80,7 @@ namespace TastySoap{
     public class AsyncServer : IAsyncServer{
         private Stack<SocketAsyncEventArgs> pool;
         public int Port{ get; set; }
-        public IPEndPoint IP{ get; set; }
+        public IPEndPoint IPEP{ get; set; }
         public int ReciveBufferSize{ get; private set; }
 
         public AsyncServer(IPEndPoint ipep, int port, int maxConnectionCount, int reciveBufferSize){
@@ -104,7 +104,7 @@ namespace TastySoap{
         }
 
         override public void Start(){
-
+            prepareListenSocket();
         }
     }
 }
