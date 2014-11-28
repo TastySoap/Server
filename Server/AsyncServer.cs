@@ -12,60 +12,118 @@ namespace TastySoap {
     /// <summary>
     /// The represenation of an asynchronous server.
     /// </summary>
-    public class AsyncServer : IAsyncServer {
+    public class AsyncServer : IAsyncServer{
+        /// <summary>
+        /// Prealocated pool of async socket operations.
+        /// </summary>
         private Stack<SocketAsyncEventArgs> pool;
-        public int Port { get; set; }
-        public IPEndPoint IPEP { get; set; }
-        public int ReciveBufferSize { get; private set; }
-        public int MaximalConnectionsCount { get; private set; }
-
+        /// <summary>
+        /// Port of the server.
+        /// </summary>
+        public int Port{ get; set; }
+        /// <summary>
+        /// IP endpoint of the server.
+        /// </summary>
+        public IPEndPoint IPEP{ get; set; }
+        //TODO: create Package class and use it here
+        /// <summary>
+        /// Package size used both for reciving and sending
+        /// </summary>
+        public int PackageSize{ get; private set; }
+        /// <summary>
+        /// Maximal number of connections
+        /// </summary>
+        public int MaximalConnectionsCount{ get; private set; }
+        /// <summary>
+        /// Socket for listening.
+        /// </summary>
         private Socket listenSocket;
+        /// <summary>
+        /// shh... its a semaphore...
+        /// </summary>
+        Semaphore maxNumberAcceptedClients;
 
-        public AsyncServer(IPEndPoint ipep, int port, int maxConnectionCount, int reciveBufferSize) {
+        /// <summary>
+        /// Constructor of the server. Inits values and prealocates the pool.
+        /// </summary>
+        /// <param name="ipep">Server endpoint.</param>
+        /// <param name="port">Server port.</param>
+        /// <param name="maxConnectionCount">Maximal number of connections; Used for prealocated pool.</param>
+        /// <param name="packageSize">Buffer size for both reciving and sending</param>
+        public AsyncServer(IPEndPoint ipep, int port, int maxConnectionCount, int packageSize){
             Port = port;
             IPEP = ipep;
             MaximalConnectionsCount = maxConnectionCount;
-            preparePool(maxConnectionCount, reciveBufferSize);
+            preparePool(maxConnectionCount, packageSize);
+            maxNumberAcceptedClients = new Semaphore(MaximalConnectionsCount, MaximalConnectionsCount);
         }
 
-        private void preparePool(int maxConnectionCount, int reciveBufferSize) {
+        /// <summary>
+        /// Internal method for pool preparation process.
+        /// This method prealocates pool.
+        /// </summary>
+        /// <param name="maxConnectionCount">Maximal number of connections</param>
+        /// <param name="bufferSize">Size of a buffer.</param>
+        private void preparePool(int maxConnectionCount, int bufferSize){
             pool = new Stack<SocketAsyncEventArgs>(maxConnectionCount);
-            for(int i = 0; i < reciveBufferSize; ++i) {
+            for(int i = 0; i < bufferSize; ++i){
                 SocketAsyncEventArgs ioEventArg = new SocketAsyncEventArgs();
                 ioEventArg.Completed += OnIOFinished;
-                ioEventArg.SetBuffer(new byte[reciveBufferSize], 0, reciveBufferSize);
+                ioEventArg.SetBuffer(new byte[bufferSize], 0, bufferSize);
                 pool.Push(ioEventArg);
             }
         }
 
-        override protected void OnIOFinished(object sender, SocketAsyncEventArgs args) {
+        /// <summary>
+        /// Event called after finishing of both sending and reciving process.
+        /// </summary>
+        /// <param name="sender">sender of this event</param>
+        /// <param name="args">Socket operation</param>
+        override protected void OnIOFinished(object sender, SocketAsyncEventArgs args){
         }
 
-        override public void Start() {
+        /// <summary>
+        /// This method starts the server.
+        /// It prepares the listening socket and prepares (and starts) the acceptation process.
+        /// </summary>
+        override public void Start(){
             prepareListenSocket();
             prepareAndStartAcceptationProcess();
         }
 
-        protected void prepareListenSocket() {
+        /// <summary>
+        /// This method prepares the listeninig socket by creating and passing needed informations.
+        /// </summary>
+        protected void prepareListenSocket(){
             listenSocket = new Socket(IPEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            listenSocket.ReceiveBufferSize = ReciveBufferSize;
-            listenSocket.SendBufferSize = ReciveBufferSize;
+            listenSocket.ReceiveBufferSize = PackageSize;
+            listenSocket.SendBufferSize = PackageSize;
             listenSocket.Bind(IPEP);
             listenSocket.Listen(MaximalConnectionsCount);
         }
 
-        protected void prepareAndStartAcceptationProcess() {
+        /// <summary>
+        /// Pepares and starts the acceptation process.
+        /// It adds "OnAcceptCompleted" event for the brand new SocketAsyncEventArgs and starts Accepting by passing that object.
+        /// </summary>
+        protected void prepareAndStartAcceptationProcess(){
             var args = new SocketAsyncEventArgs();
-            args.Completed += OnAcceptCompleted;
+            args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
             Accept(args);
         }
 
-        override public void Accept(SocketAsyncEventArgs args) {
+        /// <summary>
+        /// Starts the acceptation process.
+        /// </summary>
+        /// <param name="args"></param>
+        override public void Accept(SocketAsyncEventArgs args){
             args.AcceptSocket = null;
-
+            maxNumberAcceptedClients.WaitOne();
+            //if(!listenSocket.AcceptAsync(args))
+                //ProcessAccept(args);
         }
 
-        override public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args) {
+        override public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
         }
     }
 }

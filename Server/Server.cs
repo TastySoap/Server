@@ -36,7 +36,7 @@ namespace TastySoap{
     /// </summary>
     public interface IAsyncSocketReciver{
         public void ProcessRecive(SocketAsyncEventArgs args);
-        public int ReciveBufferSize{ get; private set; }
+        public int PackageSize{ get; private set; }
     }
 
     /// <summary>
