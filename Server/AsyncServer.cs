@@ -35,6 +35,10 @@ namespace TastySoap {
         /// </summary>
         public int MaximalConnectionsCount{ get; private set; }
         /// <summary>
+        /// Actual number of connections.
+        /// </summary>
+        private int conectionsCount;
+        /// <summary>
         /// Socket for listening.
         /// </summary>
         private Socket listenSocket;
@@ -119,8 +123,13 @@ namespace TastySoap {
         override public void Accept(SocketAsyncEventArgs args){
             args.AcceptSocket = null;
             maxNumberAcceptedClients.WaitOne();
-            //if(!listenSocket.AcceptAsync(args))
-                //ProcessAccept(args);
+            if(!listenSocket.AcceptAsync(args))
+                ProcessAccept(args);
+        }
+
+        override public void ProcessAccept(SocketAsyncEventArgs args){
+            Interlocked.Increment(ref conectionsCount);
+
         }
 
         override public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
