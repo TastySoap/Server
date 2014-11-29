@@ -37,12 +37,12 @@ namespace TastySoap{
         void ProcessReceive(SocketAsyncEventArgs args);
     }
 
-    /// <summary>
-    /// Makes object being able to do non-blocking sending.
-    /// </summary>
-    public interface IAsyncSocketSender{
-        void ProcessSend(SocketAsyncEventArgs args);
-    }
+    ///// <summary>
+    ///// Makes object being able to do non-blocking sending.
+    ///// </summary>
+    //public interface IAsyncSocketSender{
+    //    void ProcessSend(SocketAsyncEventArgs args);
+    //}
 
     /// <summary>
     /// Makes object being able to asynchronously accept connections 
@@ -70,7 +70,7 @@ namespace TastySoap{
         IRunnable,
         IAsyncSocketAcceptor,
         IAsyncSocketReceiver,
-        IAsyncSocketSender,
+        //IAsyncSocketSender,
         IAsyncErrorHandler
     {
         void OnIOFinished(object sender, SocketAsyncEventArgs args);
