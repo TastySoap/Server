@@ -21,7 +21,7 @@ namespace TastySoap{
                 Stack.Push(args.Buffer[i]);
         }
 
-        override public void Dispose(){
+        public void Dispose(){
             try{
                 Connection.Shutdown(SocketShutdown.Send);
             } 

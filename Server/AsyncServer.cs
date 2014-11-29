@@ -5,7 +5,6 @@ using System.Threading;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace TastySoap {
 
@@ -83,14 +82,14 @@ namespace TastySoap {
         /// </summary>
         /// <param name="sender">sender of this event</param>
         /// <param name="args">Socket operation</param>
-        override protected void OnIOFinished(object sender, SocketAsyncEventArgs args){
+        public void OnIOFinished(object sender, SocketAsyncEventArgs args) {
         }
 
         /// <summary>
         /// This method starts the server.
         /// It prepares the listening socket and prepares (and starts) the acceptation process.
         /// </summary>
-        override public void Start(){
+        public void Start(){
             prepareListenSocket();
             prepareAndStartAcceptationProcess();
         }
@@ -120,20 +119,26 @@ namespace TastySoap {
         /// Starts the acceptation process.
         /// </summary>
         /// <param name="args"></param>
-        override public void Accept(SocketAsyncEventArgs args){
+        public void Accept(SocketAsyncEventArgs args){
             args.AcceptSocket = null;
             maxNumberAcceptedClients.WaitOne();
             if(!listenSocket.AcceptAsync(args))
                 ProcessAccept(args);
         }
 
-        override public void ProcessAccept(SocketAsyncEventArgs args){
+        public void ProcessAccept(SocketAsyncEventArgs args){
             Interlocked.Increment(ref conectionsCount);
             var readEventArgs = pool.Pop();
-            readEventArgs.UserToken = new AsyncToken(args.AcceptSocket, PackageSize);
+            var socket = args.AcceptSocket;
+            readEventArgs.UserToken = new AsyncToken(socket, PackageSize);
+            if(!socket.ReceiveAsync(readEventArgs))
+                processReceive(readEventArgs);
         }
 
-        override public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
+        public void processReceive(SocketAsyncEventArgs args){
+        }
+
+        public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
         }
     }
 }

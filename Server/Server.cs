@@ -5,7 +5,6 @@ using System.Threading;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
-using System.Threading;
 
 // TODO: Replace all ...EventArgs and objects with specific classes
 // TODO: Security! (System.Net.Security or openSSL)
@@ -14,14 +13,14 @@ namespace TastySoap{
     /// Makes object being able to be started.
     /// </summary>
     public interface IStartable{
-        public void Start();
+        void Start();
     }
 
     /// <summary>
     /// Makes object being able to be stopped.
     /// </summary>
     public interface IStoppable{
-        public void Stop();
+        void Stop();
     }
 
     /// <summary>
@@ -34,16 +33,15 @@ namespace TastySoap{
     /// <summary>
     /// Makes object being able to do non-blocking reciving.
     /// </summary>
-    public interface IAsyncSocketReciver{
-        public void ProcessRecive(SocketAsyncEventArgs args);
-        public int PackageSize{ get; private set; }
+    public interface IAsyncSocketReceiver{
+        void ProcessReceive(SocketAsyncEventArgs args);
     }
 
     /// <summary>
     /// Makes object being able to do non-blocking sending.
     /// </summary>
     public interface IAsyncSocketSender{
-        public void ProcessSend(SocketAsyncEventArgs args);
+        void ProcessSend(SocketAsyncEventArgs args);
     }
 
     /// <summary>
@@ -52,9 +50,9 @@ namespace TastySoap{
     /// </summary>
     public interface IAsyncSocketAcceptor{
         // TODO: Connection class
-        public void Accept(SocketAsyncEventArgs args);
-        public void ProcessAccept(SocketAsyncEventArgs args);
-        protected void OnAcceptCompleted(object sender, SocketAsyncEventArgs args);
+        void Accept(SocketAsyncEventArgs args);
+        void ProcessAccept(SocketAsyncEventArgs args);
+        void OnAcceptCompleted(object sender, SocketAsyncEventArgs args);
     }
 
     /// <summary>
@@ -67,12 +65,12 @@ namespace TastySoap{
     public interface IAsyncServer: 
         IRunnable,
         IAsyncSocketAcceptor,
-        IAsyncSocketReciver,
+        IAsyncSocketReceiver,
         IAsyncSocketSender
     {
-        protected void OnIOFinished(object sender, SocketAsyncEventArgs args);
-        public void CloseClientConnection(SocketAsyncEventArgs args);
-        public int Port{ get; set; }
-        public IPEndPoint IPEP{ get; set; }
+        void OnIOFinished(object sender, SocketAsyncEventArgs args);
+        void CloseClientConnection(SocketAsyncEventArgs args);
+        int Port{ get; set; }
+        IPEndPoint IPEP{ get; set; }
     }
 }
