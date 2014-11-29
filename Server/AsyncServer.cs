@@ -150,7 +150,7 @@ namespace TastySoap {
         }
 
         public void processError(SocketAsyncEventArgs args){
-            //TODO: connection closing.
+            CloseClientConnection(args);
         }
 
         public void CloseClientConnection(SocketAsyncEventArgs args){
@@ -161,6 +161,7 @@ namespace TastySoap {
         }
 
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
+            //TODO;
         }
     }
 }
