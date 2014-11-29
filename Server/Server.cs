@@ -55,6 +55,10 @@ namespace TastySoap{
         void OnAcceptCompleted(object sender, SocketAsyncEventArgs args);
     }
 
+    public interface IAsyncErrorHandler{
+        void processError(SocketAsyncEventArgs args);
+    }
+
     /// <summary>
     /// Interface of asynchronous server.
     /// </summary>
@@ -66,7 +70,8 @@ namespace TastySoap{
         IRunnable,
         IAsyncSocketAcceptor,
         IAsyncSocketReceiver,
-        IAsyncSocketSender
+        IAsyncSocketSender,
+        IAsyncErrorHandler
     {
         void OnIOFinished(object sender, SocketAsyncEventArgs args);
         void CloseClientConnection(SocketAsyncEventArgs args);

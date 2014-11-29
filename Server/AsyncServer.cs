@@ -136,6 +136,8 @@ namespace TastySoap {
         }
 
         public void processReceive(SocketAsyncEventArgs args){
+            if(args.BytesTransferred <= 0)
+                processError(args);
         }
 
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
