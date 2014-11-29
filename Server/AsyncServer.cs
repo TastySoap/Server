@@ -36,7 +36,7 @@ namespace TastySoap {
         /// <summary>
         /// Actual number of connections.
         /// </summary>
-        private int conectionsCount;
+        private int connectionsCount;
         /// <summary>
         /// Socket for listening.
         /// </summary>
@@ -45,6 +45,10 @@ namespace TastySoap {
         /// shh... its a semaphore...
         /// </summary>
         Semaphore maxNumberAcceptedClients;
+        /// <summary>
+        /// Controls the total number of clients connected to the server.
+        /// </summary>
+        Semaphore semaphoreAcceptedClients;
 
         /// <summary>
         /// Constructor of the server. Inits values and prealocates the pool.
@@ -127,7 +131,7 @@ namespace TastySoap {
         }
 
         public void ProcessAccept(SocketAsyncEventArgs args){
-            Interlocked.Increment(ref conectionsCount);
+            Interlocked.Increment(ref connectionsCount);
             var readEventArgs = pool.Pop();
             var socket = args.AcceptSocket;
             readEventArgs.UserToken = new AsyncToken(socket, PackageSize);
@@ -138,10 +142,22 @@ namespace TastySoap {
         public void processReceive(SocketAsyncEventArgs args){
             if(args.BytesTransferred <= 0)
                 processError(args);
+            else if(args.SocketError != SocketError.Success)
+                CloseClientConnection(args);
+            else{
+                //TODO;
+            }
         }
 
         public void processError(SocketAsyncEventArgs args){
             //TODO: connection closing.
+        }
+
+        public void CloseClientConnection(SocketAsyncEventArgs args){
+            (args.UserToken as AsyncToken).Dispose();
+            semaphoreAcceptedClients.Release();
+            Interlocked.Decrement(ref connectionsCount);
+            pool.Push(args);
         }
 
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
