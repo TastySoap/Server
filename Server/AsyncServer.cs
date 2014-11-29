@@ -11,6 +11,10 @@ namespace TastySoap {
     /// <summary>
     /// The represenation of an asynchronous server.
     /// </summary>
+    /// <remarks>
+    /// Note: Not only server is asynchronous. The whole class is!
+    /// If you want to keep server running you have give it the "time".
+    /// </remarks>
     public class AsyncServer : IAsyncServer{
         /// <summary>
         /// Prealocated pool of async socket operations.
@@ -136,17 +140,26 @@ namespace TastySoap {
             var socket = args.AcceptSocket;
             readEventArgs.UserToken = new AsyncToken(socket, PackageSize);
             if(!socket.ReceiveAsync(readEventArgs))
-                processReceive(readEventArgs);
+                ProcessReceive(readEventArgs);
         }
 
-        public void processReceive(SocketAsyncEventArgs args){
+        public void ProcessReceive(SocketAsyncEventArgs args){
+            var token = args.UserToken as AsyncToken;
             if(args.BytesTransferred <= 0)
                 processError(args);
             else if(args.SocketError != SocketError.Success)
                 CloseClientConnection(args);
             else{
-                //TODO;
+                Socket s = token.Connection;
+                if(s.Available == 0)
+                    takeAction(token);
+                else if(!s.ReceiveAsync(args))
+                    ProcessReceive(args);
             }
+        }
+
+        public void takeAction(AsyncToken token){ 
+            //TODO: Send proper data based on recived one.
         }
 
         public void processError(SocketAsyncEventArgs args){
@@ -162,6 +175,10 @@ namespace TastySoap {
 
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
             //TODO;
+        }
+
+        public void Stop(){
+            this.listenSocket.Close();
         }
     }
 }
