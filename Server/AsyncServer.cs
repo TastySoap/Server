@@ -130,7 +130,7 @@ namespace TastySoap {
         override public void ProcessAccept(SocketAsyncEventArgs args){
             Interlocked.Increment(ref conectionsCount);
             var readEventArgs = pool.Pop();
-            //TODO: Token class
+            readEventArgs.UserToken = new AsyncToken(args.AcceptSocket, PackageSize);
         }
 
         override public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
