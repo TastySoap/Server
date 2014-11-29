@@ -140,6 +140,10 @@ namespace TastySoap {
                 processError(args);
         }
 
+        public void processError(SocketAsyncEventArgs args){
+            //TODO: connection closing.
+        }
+
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
         }
     }
