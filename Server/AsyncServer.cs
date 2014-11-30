@@ -6,8 +6,7 @@ using System.Net;
 using System.Text;
 using System.Collections.Generic;
 
-namespace TastySoap {
-
+namespace TastySoap{
     /// <summary>
     /// The represenation of an asynchronous server.
     /// </summary>
@@ -126,7 +125,7 @@ namespace TastySoap {
         /// <summary>
         /// Starts the acceptation process.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">async data</param>
         public void Accept(SocketAsyncEventArgs args){
             args.AcceptSocket = null;
             maxNumberAcceptedClients.WaitOne();
@@ -134,6 +133,10 @@ namespace TastySoap {
                 ProcessAccept(args);
         }
 
+        /// <summary>
+        /// Process the acceptation proccess.
+        /// </summary>
+        /// <param name="args">async data</param>
         public void ProcessAccept(SocketAsyncEventArgs args){
             Interlocked.Increment(ref connectionsCount);
             var readEventArgs = pool.Pop();
@@ -143,6 +146,10 @@ namespace TastySoap {
                 ProcessReceive(readEventArgs);
         }
 
+        /// <summary>
+        /// Process the receiving process.
+        /// </summary>
+        /// <param name="args">async data</param>
         public void ProcessReceive(SocketAsyncEventArgs args){
             var token = args.UserToken as AsyncToken;
             if(args.BytesTransferred <= 0)
@@ -158,14 +165,26 @@ namespace TastySoap {
             }
         }
 
+        /// <summary>
+        /// Action at the end of receiving proccess.
+        /// </summary>
+        /// <param name="token">Complete token with stack full of bytes</param>
         public void takeAction(AsyncToken token){ 
             //TODO: Send proper data based on recived one.
         }
 
+        /// <summary>
+        /// Error handling; Closes client connection
+        /// </summary>
+        /// <param name="args">async data</param>
         public void processError(SocketAsyncEventArgs args){
             CloseClientConnection(args);
         }
 
+        /// <summary>
+        /// Close client connection
+        /// </summary>
+        /// <param name="args"></param>
         public void CloseClientConnection(SocketAsyncEventArgs args){
             (args.UserToken as AsyncToken).Dispose();
             semaphoreAcceptedClients.Release();
@@ -173,10 +192,21 @@ namespace TastySoap {
             pool.Push(args);
         }
 
+        /// <summary>
+        /// Action taken at the end of acceptation proccess.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
             //TODO;
         }
 
+        /// <summary>
+        /// Stops the server.
+        /// </summary>
+        /// <remarks>
+        /// Stops the listening socket.
+        /// </remarks>
         public void Stop(){
             this.listenSocket.Close();
         }
