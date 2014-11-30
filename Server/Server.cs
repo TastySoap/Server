@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 // TODO: Replace all ...EventArgs and objects with specific classes
 // TODO: Security! (System.Net.Security or openSSL)
-// TODO: More xml docs.
 namespace TastySoap{
     /// <summary>
     /// Makes object being able to be started.
@@ -56,6 +55,9 @@ namespace TastySoap{
         void OnAcceptCompleted(object sender, SocketAsyncEventArgs args);
     }
 
+    /// <summary>
+    /// Makes object being able to process errors in asynchronous connection.
+    /// </summary>
     public interface IAsyncErrorHandler{
         void processError(SocketAsyncEventArgs args);
     }
