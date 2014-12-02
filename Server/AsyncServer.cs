@@ -195,10 +195,10 @@ namespace TastySoap{
         /// <summary>
         /// Action taken at the end of acceptation proccess.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
+        /// <param name="sender">unused</param>
+        /// <param name="args">async data</param>
         public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
-            //TODO;
+            ProcessAccept(args);
         }
 
         /// <summary>
