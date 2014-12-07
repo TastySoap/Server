@@ -1,0 +1,2 @@
+Write client for tests;
+Wrap server into high-level classes and tasks.
