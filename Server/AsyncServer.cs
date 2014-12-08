@@ -91,7 +91,7 @@ namespace TastySoap{
         /// This method starts the server.
         /// It prepares the listening socket and prepares (and starts) the acceptation process.
         /// </summary>
-        public void Start(){
+        public virtual void Start(){
             prepareListenSocket();
             prepareAndStartAcceptationProcess();
         }
@@ -99,7 +99,7 @@ namespace TastySoap{
         /// <summary>
         /// This method prepares the listeninig socket by creating and passing needed informations.
         /// </summary>
-        protected void prepareListenSocket(){
+        protected virtual void prepareListenSocket(){
             listenSocket = new Socket(IPEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             listenSocket.ReceiveBufferSize = PackageSize;
             listenSocket.SendBufferSize = PackageSize;
@@ -111,7 +111,7 @@ namespace TastySoap{
         /// Pepares and starts the acceptation process.
         /// It adds "OnAcceptCompleted" event for the brand new SocketAsyncEventArgs and starts Accepting by passing that object.
         /// </summary>
-        protected void prepareAndStartAcceptationProcess(){
+        protected virtual void prepareAndStartAcceptationProcess(){
             var args = new SocketAsyncEventArgs();
             args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
             Accept(args);
@@ -121,7 +121,7 @@ namespace TastySoap{
         /// Starts the acceptation process.
         /// </summary>
         /// <param name="args">async data</param>
-        public void Accept(SocketAsyncEventArgs args){
+        public virtual void Accept(SocketAsyncEventArgs args){
             args.AcceptSocket = null;
             maxNumberAcceptedClients.WaitOne();
             if(!listenSocket.AcceptAsync(args))
@@ -132,7 +132,7 @@ namespace TastySoap{
         /// Process the acceptation proccess.
         /// </summary>
         /// <param name="args">async data</param>
-        public void ProcessAccept(SocketAsyncEventArgs args){
+        public virtual void ProcessAccept(SocketAsyncEventArgs args){
             Interlocked.Increment(ref connectionsCount);
             var readEventArgs = pool.Pop();
             var socket = args.AcceptSocket;
@@ -202,7 +202,7 @@ namespace TastySoap{
         /// <remarks>
         /// Stops the listening socket.
         /// </remarks>
-        public void Stop(){
+        public virtual void Stop(){
             this.listenSocket.Close();
         }
     }
