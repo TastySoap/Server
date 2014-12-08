@@ -20,10 +20,6 @@ namespace TastySoap{
         /// </summary>
         private Stack<SocketAsyncEventArgs> pool;
         /// <summary>
-        /// Port of the server.
-        /// </summary>
-        public int Port{ get; set; }
-        /// <summary>
         /// IP endpoint of the server.
         /// </summary>
         public IPEndPoint IPEP{ get; set; }
@@ -60,8 +56,7 @@ namespace TastySoap{
         /// <param name="port">Server port.</param>
         /// <param name="maxConnectionCount">Maximal number of connections; Used for prealocated pool.</param>
         /// <param name="packageSize">Buffer size for both reciving and sending</param>
-        public AsyncServer(IPEndPoint ipep, int port, int maxConnectionCount, int packageSize){
-            Port = port;
+        public AsyncServer(IPEndPoint ipep, int maxConnectionCount, int packageSize){
             IPEP = ipep;
             MaximalConnectionsCount = maxConnectionCount;
             preparePool(maxConnectionCount, packageSize);

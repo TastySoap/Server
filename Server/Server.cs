@@ -79,7 +79,6 @@ namespace TastySoap{
         void OnIOFinished(object sender, SocketAsyncEventArgs args);
         void CloseClientConnection(SocketAsyncEventArgs args);
         void takeAction(AsyncToken token);
-        int Port{ get; set; }
         IPEndPoint IPEP{ get; set; }
     }
 }
