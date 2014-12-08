@@ -16,8 +16,10 @@ namespace TastySoap{
             base.Accept(args);
         }
         public override void ProcessAccept(SocketAsyncEventArgs args){
-            Console.WriteLine("Server.ProcessAccept; Remote EndPoint: {0}", args.RemoteEndPoint);
+
+            Console.WriteLine("Server.ProcessAccept;");
             base.ProcessAccept(args);
+            Console.WriteLine("Remote EndPoint: {0}", args.AcceptSocket.RemoteEndPoint.ToString());
         }
         public override void Stop(){
             Console.WriteLine("Server.Stop;");

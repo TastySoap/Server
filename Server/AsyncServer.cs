@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
@@ -33,6 +34,10 @@ namespace TastySoap{
         /// </summary>
         public int MaximalConnectionsCount{ get; private set; }
         /// <summary>
+        /// State of server; Is running?
+        /// </summary>
+        public bool IsRunning{ get; private set; }
+        /// <summary>
         /// Actual number of connections.
         /// </summary>
         private int connectionsCount;
@@ -57,6 +62,7 @@ namespace TastySoap{
         /// <param name="maxConnectionCount">Maximal number of connections; Used for prealocated pool.</param>
         /// <param name="packageSize">Buffer size for both reciving and sending</param>
         public AsyncServer(IPEndPoint ipep, int maxConnectionCount, int packageSize){
+            IsRunning = false;
             IPEP = ipep;
             MaximalConnectionsCount = maxConnectionCount;
             preparePool(maxConnectionCount, packageSize);
@@ -92,6 +98,7 @@ namespace TastySoap{
         /// It prepares the listening socket and prepares (and starts) the acceptation process.
         /// </summary>
         public virtual void Start(){
+            IsRunning = true;
             prepareListenSocket();
             prepareAndStartAcceptationProcess();
         }
@@ -124,6 +131,7 @@ namespace TastySoap{
         public virtual void Accept(SocketAsyncEventArgs args){
             args.AcceptSocket = null;
             maxNumberAcceptedClients.WaitOne();
+            //Todo: fix; What if no one wants to connect?
             if(!listenSocket.AcceptAsync(args))
                 ProcessAccept(args);
         }
@@ -203,6 +211,7 @@ namespace TastySoap{
         /// Stops the listening socket.
         /// </remarks>
         public virtual void Stop(){
+            IsRunning = false;
             this.listenSocket.Close();
         }
     }
