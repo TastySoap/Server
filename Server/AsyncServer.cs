@@ -49,10 +49,6 @@ namespace TastySoap{
         /// shh... its a semaphore...
         /// </summary>
         Semaphore maxNumberAcceptedClients;
-        /// <summary>
-        /// Controls the total number of clients connected to the server.
-        /// </summary>
-        Semaphore semaphoreAcceptedClients;
 
         /// <summary>
         /// Constructor of the server. Inits values and prealocates the pool.
@@ -75,7 +71,7 @@ namespace TastySoap{
         /// </summary>
         /// <param name="maxConnectionCount">Maximal number of connections</param>
         /// <param name="bufferSize">Size of a buffer.</param>
-        private void preparePool(int maxConnectionCount, int bufferSize){
+        protected virtual void preparePool(int maxConnectionCount, int bufferSize){
             pool = new Stack<SocketAsyncEventArgs>(maxConnectionCount);
             for(int i = 0; i < bufferSize; ++i){
                 SocketAsyncEventArgs ioEventArg = new SocketAsyncEventArgs();
@@ -90,7 +86,7 @@ namespace TastySoap{
         /// </summary>
         /// <param name="sender">sender of this event</param>
         /// <param name="args">Socket operation</param>
-        public void OnIOFinished(object sender, SocketAsyncEventArgs args) {
+        public virtual void OnIOFinished(object sender, SocketAsyncEventArgs args) {
         }
 
         /// <summary>
@@ -153,7 +149,7 @@ namespace TastySoap{
         /// Process the receiving process.
         /// </summary>
         /// <param name="args">async data</param>
-        public void ProcessReceive(SocketAsyncEventArgs args){
+        public virtual void ProcessReceive(SocketAsyncEventArgs args){
             var token = args.UserToken as AsyncToken;
             if(args.BytesTransferred <= 0)
                 processError(args);
@@ -162,7 +158,7 @@ namespace TastySoap{
             else{
                 Socket s = token.Connection;
                 if(s.Available == 0)
-                    takeAction(token);
+                    OnReceiveCompleted(token);
                 else if(!s.ReceiveAsync(args))
                     ProcessReceive(args);
             }
@@ -172,15 +168,14 @@ namespace TastySoap{
         /// Action at the end of receiving proccess.
         /// </summary>
         /// <param name="token">Complete token with stack full of bytes</param>
-        public void takeAction(AsyncToken token){ 
-            //TODO: Send proper data based on recived one.
+        public virtual void OnReceiveCompleted(AsyncToken token){ 
         }
 
         /// <summary>
         /// Error handling; Closes client connection
         /// </summary>
         /// <param name="args">async data</param>
-        public void processError(SocketAsyncEventArgs args){
+        public virtual void processError(SocketAsyncEventArgs args){
             CloseClientConnection(args);
         }
 
@@ -188,7 +183,7 @@ namespace TastySoap{
         /// Close client connection
         /// </summary>
         /// <param name="args"></param>
-        public void CloseClientConnection(SocketAsyncEventArgs args){
+        public virtual void CloseClientConnection(SocketAsyncEventArgs args){
             (args.UserToken as AsyncToken).Dispose();
             semaphoreAcceptedClients.Release();
             Interlocked.Decrement(ref connectionsCount);
@@ -200,7 +195,7 @@ namespace TastySoap{
         /// </summary>
         /// <param name="sender">unused</param>
         /// <param name="args">async data</param>
-        public void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
+        public virtual void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
             ProcessAccept(args);
         }
 

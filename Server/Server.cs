@@ -35,6 +35,7 @@ namespace TastySoap{
     /// </summary>
     public interface IAsyncSocketReceiver{
         void ProcessReceive(SocketAsyncEventArgs args);
+        void OnReceiveCompleted(AsyncToken token);
     }
 
     ///// <summary>
@@ -78,7 +79,6 @@ namespace TastySoap{
     {
         void OnIOFinished(object sender, SocketAsyncEventArgs args);
         void CloseClientConnection(SocketAsyncEventArgs args);
-        void takeAction(AsyncToken token);
         IPEndPoint IPEP{ get; set; }
     }
 }
