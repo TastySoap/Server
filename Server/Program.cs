@@ -3,7 +3,21 @@ using System.Net;
 using System.Net.Sockets;
 
 namespace TastySoap{
-    class LoggingServer : AsyncServer{
+    class ReceiveViewingServer : AsyncServer {
+        public ReceiveViewingServer(IPEndPoint ipep, int maxConnectionNumber, int packageSize):
+            base(ipep, maxConnectionNumber, packageSize){}
+
+        public override void OnReceiveCompleted(AsyncToken token) {
+            
+            System.Console.WriteLine(
+                "Server.OnReceiveCompleted: {0} said: {1}", 
+                token.Connection.RemoteEndPoint.ToString(),
+                System.Text.Encoding.UTF8.GetString(token.Stack.ToArray())
+            );
+            base.OnReceiveCompleted(token);
+        }
+    }
+    class LoggingServer : ReceiveViewingServer{
         public LoggingServer(IPEndPoint ipep, int maxConnectionNumber, int packageSize): 
             base(ipep, maxConnectionNumber, packageSize){}
 
@@ -21,6 +35,16 @@ namespace TastySoap{
             base.ProcessAccept(args);
             Console.WriteLine("Remote EndPoint: {0}", args.AcceptSocket.RemoteEndPoint.ToString());
         }
+        public override void OnAcceptCompleted(object sender, SocketAsyncEventArgs args){
+            base.OnAcceptCompleted(sender, args);
+            Console.WriteLine("Server.OnAcceptCompleted; Remote EndPoint: {0}", 
+                              args.AcceptSocket.RemoteEndPoint.ToString());
+        }
+        public override void ProcessReceive(SocketAsyncEventArgs args) {
+            Console.WriteLine("Server.ProcessReceive; Remote EndPoint: {0}", args.AcceptSocket.RemoteEndPoint.ToString());
+            base.ProcessReceive(args);
+        }
+
         public override void Stop(){
             Console.WriteLine("Server.Stop;");
             base.Stop();

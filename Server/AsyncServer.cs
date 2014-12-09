@@ -137,7 +137,6 @@ namespace TastySoap{
         /// </summary>
         /// <param name="args">async data</param>
         public virtual void ProcessAccept(SocketAsyncEventArgs args){
-            Interlocked.Increment(ref connectionsCount);
             var readEventArgs = pool.Pop();
             var socket = args.AcceptSocket;
             readEventArgs.UserToken = new AsyncToken(socket, PackageSize);
@@ -185,7 +184,6 @@ namespace TastySoap{
         /// <param name="args"></param>
         public virtual void CloseClientConnection(SocketAsyncEventArgs args){
             (args.UserToken as AsyncToken).Dispose();
-            semaphoreAcceptedClients.Release();
             Interlocked.Decrement(ref connectionsCount);
             pool.Push(args);
         }
